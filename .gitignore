@@ -1,0 +1,29 @@
+# Build output (CI rebuilds on every deploy)
+dist/
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local env
+.env
+.env.local
+.dev.vars
+
+# Wrangler local state
+.wrangler/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Claude Code workspace
+.claude/

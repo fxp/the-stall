@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#F5F1E8">
+<title>距离测试 · 一份关于你如何选择位置的研究</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #E8E2D3;
+    --paper-darker: #DDD5C2;
+    --ink: #1A1714;
+    --ink-soft: #4A4540;
+    --ink-faint: #8A8278;
+    --accent: #C44536;
+    --accent-soft: #E8B5A8;
+    --accent-bg: rgba(196, 69, 54, 0.08);
+    --line: #D4CCB8;
+    --shadow: 0 1px 0 rgba(26, 23, 20, 0.08);
+    --shadow-lg: 0 8px 24px -8px rgba(26, 23, 20, 0.18);
+    --serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    --mono: 'JetBrains Mono', 'Menlo', monospace;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    overflow-x: hidden;
+    /* paper grain texture */
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(196, 69, 54, 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(26, 23, 20, 0.02) 0%, transparent 40%);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* —— Splash —— */
+  .splash {
+    min-height: 100vh;
+    padding: 48px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .splash-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .splash-hero {
+    margin-top: 80px;
+  }
+  .splash-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .splash-title {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 24px;
+  }
+  .splash-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .splash-sub {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 380px;
+    font-weight: 400;
+  }
+  .splash-meta-info {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+  }
+  .challenge-banner {
+    margin-top: 28px;
+    padding: 16px 18px;
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    font-family: var(--serif);
+  }
+  .challenge-banner-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .challenge-banner-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .challenge-banner-text strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .meta-cell {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .meta-cell strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-top: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled {
+    background: var(--line);
+    color: var(--ink-faint);
+    cursor: not-allowed;
+    transform: none;
+  }
+  .consent {
+    margin-top: 28px;
+    padding: 18px 20px;
+    background: var(--paper-dark);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+  }
+  .consent-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .consent-title {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+  .consent-list {
+    margin: 0 0 12px;
+    padding-left: 20px;
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+  .consent-list li { margin-bottom: 2px; }
+  .consent-list strong { color: var(--ink); font-weight: 700; }
+  .consent-note {
+    margin: 0 0 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-faint);
+  }
+  .consent-note strong { color: var(--ink-soft); font-weight: 500; }
+  .consent-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0 2px;
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+  }
+  .consent-check input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    margin: 1px 0 0;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 16px 24px;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    font-family: var(--sans);
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .splash-disclaimer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* —— Scene Screens —— */
+  .scene {
+    min-height: 100vh;
+    padding: 20px 24px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .scene-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+  .scene-progress {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+  .scene-progress strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .scene-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--paper-darker);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  .scene-h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+  }
+  .scene-context {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+  }
+
+  /* —— Diagram —— */
+  .diagram {
+    background: var(--paper-dark);
+    padding: 20px 16px 16px;
+    margin-bottom: 28px;
+    position: relative;
+    border: 1px solid var(--line);
+  }
+  .diagram-label {
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .urinal-row {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+  .entry-marker {
+    flex: 0 0 auto;
+    width: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 9px;
+    font-family: var(--mono);
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+  }
+  .urinal {
+    flex: 1;
+    aspect-ratio: 0.75;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px 6px 12px 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+  }
+  .urinal-id {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--ink-faint);
+  }
+  .urinal.occupied {
+    background: var(--paper-darker);
+  }
+  .person-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .person-icon::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 14px;
+    background: var(--ink);
+    border-radius: 11px 11px 4px 4px;
+    bottom: -10px;
+    left: -2px;
+  }
+  .person-tag {
+    font-family: var(--sans);
+    font-size: 10px;
+    line-height: 1.2;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 0 2px;
+    margin-top: 8px;
+  }
+  .urinal-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* —— Choice cards —— */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .choice-prompt {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .choice-btn {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px 20px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--ink);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 56px;
+  }
+  .choice-btn:active {
+    background: var(--paper-dark);
+    transform: scale(0.99);
+  }
+  .choice-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+  }
+  .choice-marker {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    flex: 0 0 auto;
+    width: 24px;
+  }
+  .choice-btn.selected .choice-marker {
+    color: var(--accent);
+  }
+  .choice-label { flex: 1; }
+  .choice-hint {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+    font-family: var(--serif);
+  }
+
+  /* —— Results page —— */
+  .computing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 32px;
+  }
+  .computing-dots {
+    font-family: var(--mono);
+    font-size: 32px;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .computing-text {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin-top: 24px;
+    line-height: 1.6;
+  }
+
+  .result {
+    padding: 24px 0 40px;
+  }
+
+  .reveal {
+    padding: 40px 28px 48px;
+    background: var(--paper-dark);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .reveal-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .reveal-name {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 1.0;
+    margin: 0 0 4px;
+    letter-spacing: -0.03em;
+  }
+  .reveal-name-en {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink-faint);
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 24px;
+  }
+  .reveal-slogan {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.4;
+    margin: 0 0 16px;
+    font-weight: 500;
+  }
+  .reveal-slogan::before {
+    content: '\201C';
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .reveal-slogan::after {
+    content: '\201D';
+    color: var(--accent);
+    margin-left: 4px;
+  }
+  .reveal-sub {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .reveal-name-mix {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: -0.01em;
+    display: inline-block;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .reveal-sub-mix {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-left: 2px solid var(--accent-soft);
+    background: var(--paper-dark);
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .reveal-sub-mix strong { color: var(--accent); font-weight: 700; }
+  .reveal-meta {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .meta-stat {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .meta-stat strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-top: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* —— Section common —— */
+  .section {
+    padding: 40px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.2;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin: 0 0 28px;
+  }
+
+  /* —— Replay cards —— */
+  .replay-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .replay-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 10px;
+  }
+  .replay-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .replay-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .replay-row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .replay-row-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .replay-row-value {
+    font-family: var(--serif);
+    font-size: 14px;
+  }
+  .replay-row.user .replay-row-value { color: var(--accent); font-weight: 700; }
+  .replay-bar-container {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+  .replay-bar-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 36px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-family: var(--mono);
+  }
+  .replay-bar-id {
+    color: var(--ink-faint);
+  }
+  .replay-bar-track {
+    height: 8px;
+    background: var(--paper-dark);
+    position: relative;
+  }
+  .replay-bar-fill {
+    height: 100%;
+    background: var(--ink-soft);
+  }
+  .replay-bar-row.user .replay-bar-fill { background: var(--accent); }
+  .replay-bar-row.user .replay-bar-id { color: var(--accent); font-weight: 700; }
+  .replay-bar-pct {
+    color: var(--ink-faint);
+    text-align: right;
+  }
+  .replay-msg {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--paper-dark);
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .replay-msg::before {
+    content: '💡 ';
+  }
+
+  /* —— Radar chart —— */
+  .radar-container {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+  }
+  .radar-svg {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+  }
+  .radar-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .radar-stat {
+    text-align: center;
+    padding: 8px 4px;
+    background: var(--paper-dark);
+  }
+  .radar-stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .radar-stat-name {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--ink);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+  .radar-stat-value {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .radar-stat-note {
+    font-size: 10px;
+    line-height: 1.4;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--line);
+    color: var(--ink-faint);
+    min-height: 24px;
+  }
+  .radar-stat-note.tone-high { color: var(--accent); font-weight: 500; }
+  .radar-stat-note.tone-low  { color: var(--ink-soft); font-style: italic; }
+  .radar-stat-note.tone-mid  { color: var(--ink-faint); }
+  .radar-summary {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--paper-dark);
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--accent);
+  }
+  .compare-table {
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 10px 4px;
+    border-bottom: 1px dashed var(--line);
+    font-family: var(--serif);
+    font-size: 14px;
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row.compare-head {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .compare-row.compare-head span:not(:first-child) { text-align: center; }
+  .compare-dim { color: var(--ink); font-weight: 500; }
+  .compare-me { text-align: center; font-weight: 700; color: var(--accent); }
+  .compare-friend { text-align: center; color: var(--ink-soft); }
+  .compare-delta {
+    text-align: center;
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+  .compare-delta.pos { color: var(--accent); }
+  .compare-delta.neg { color: #5C6B47; }
+
+  /* —— Profile —— */
+  .profile {
+    font-family: var(--serif);
+    line-height: 1.85;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .profile p {
+    margin: 0 0 18px;
+  }
+  .profile strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .profile-question {
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: var(--paper-dark);
+    border-left: 3px solid var(--accent);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-weight: 500;
+  }
+  .profile-question::before {
+    content: '— 一个值得你思考的问题 —';
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  /* —— Decision style + share —— */
+  .style-card {
+    background: var(--paper-dark);
+    padding: 24px 20px;
+    margin-bottom: 16px;
+  }
+  .style-name {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+  .style-line {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .style-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+  .style-stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .style-stat-val {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .celebrity {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .celebrity-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .celebrity-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .action-btn {
+    padding: 14px 20px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .action-btn:active { background: var(--paper-dark); }
+  .action-btn.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .action-btn-arrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .action-btn.primary .action-btn-arrow { color: var(--paper-dark); }
+
+  .disclaimer {
+    margin: 32px 24px 20px;
+    padding: 20px;
+    background: var(--paper-dark);
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .disclaimer-title {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .disclaimer ul {
+    margin: 8px 0 0;
+    padding-left: 16px;
+  }
+  .disclaimer li { margin-bottom: 4px; }
+
+  .footer {
+    text-align: center;
+    padding: 28px 24px 60px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+
+  /* —— View transitions —— */
+  .view {
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* —— Toast —— */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 20px;
+    font-size: 13px;
+    z-index: 100;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translate(-50%, 16px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+// ============================================================
+// 数据：8 个场景
+// ============================================================
+const SCENES = [
+  {
+    id: "S1",
+    title: "空厕所",
+    context: "你刚走进厕所。5 个小便池，全部空着。请选择你会站的位置。",
+    layout: { count: 5, occupants: [null, null, null, null, null], entry: "left" },
+    options: [
+      { id: "A1", label: "最靠门（A1）", hint: "进门第一个", scores: { PS:-5, SC:0, SO:-10, CO:-5, AS:10 } },
+      { id: "A2", label: "次靠门（A2）", hint: "", scores: { PS:0, SC:0, SO:-5, CO:0, AS:0 } },
+      { id: "A3", label: "正中（A3）", hint: "中间位", scores: { PS:-5, SC:0, SO:-10, CO:0, AS:5 } },
+      { id: "A4", label: "次靠里（A4）", hint: "", scores: { PS:5, SC:5, SO:5, CO:5, AS:-5 } },
+      { id: "A5", label: "最里（A5）", hint: "靠墙的最后一个", scores: { PS:15, SC:10, SO:15, CO:10, AS:-10 } }
+    ],
+    optimal: "A5",
+    distribution: { A1: 8, A2: 14, A3: 21, A4: 25, A5: 32 },
+    replay: {
+      A1: "你选了第一个位。这是效率最高、博弈论最差的选择——离门最近=被打扰概率最高。",
+      A2: "你接近博弈论最优，但少了关键一步推演。",
+      A3: "正中是 21% 用户的选择，不最优也不最次——一种'无策略'的中庸。",
+      A4: "你接近最优解，离 Heaton-Krizanc 黄金位只差一格。",
+      A5: "你天生懂博弈论。最里位最大化了未来空间——下一个进来的人不会站你旁边的概率最高。"
+    }
+  },
+  {
+    id: "S2",
+    title: "两端被占",
+    context: "5 个小便池，A1 站着一个看手机的中年男，A5 是一个穿西装的中年男。中间 3 位空。",
+    layout: { count: 5, occupants: [
+      { tag: "中年男·看手机" }, null, null, null, { tag: "中年男·西装" }
+    ], entry: "left" },
+    options: [
+      { id: "A2", label: "紧邻 A1（看手机者）", hint: "靠近随意者", scores: { PS:-10, SC:-5, SO:-5, CO:0, AS:5 } },
+      { id: "A3", label: "正中（A3）", hint: "等距两边", scores: { PS:0, SC:0, SO:5, CO:0, AS:5 } },
+      { id: "A4", label: "紧邻 A5（西装者）", hint: "靠近高地位者", scores: { PS:-10, SC:0, SO:-5, CO:5, AS:10 } },
+      { id: "WAIT", label: "退出去等", hint: "等里面有人离开", scores: { PS:20, SC:10, SO:-10, CO:5, AS:-15 } }
+    ],
+    optimal: "A3",
+    distribution: { A2: 18, A3: 58, A4: 16, WAIT: 8 },
+    replay: {
+      A2: "你紧邻了'看手机的随意者'——选这边的人在无意识中倾向'低社会压力'的对象。",
+      A3: "正中是数学最优——最大化了与两侧的距离。58% 的人和你一样。",
+      A4: "你紧邻了'西装中年'——选这边的人有微弱的'地位认同'信号。",
+      WAIT: "你属于 8% 选择等待的人——这是稀缺的克制。"
+    }
+  },
+  {
+    id: "S3",
+    title: "无处可逃",
+    context: "公共厕所只有 3 个小便池，A2 被一个戴耳机的大学生占了。A1 和 A3 都与 ta 相邻。",
+    layout: { count: 3, occupants: [null, { tag: "大学生·戴耳机" }, null], entry: "left" },
+    options: [
+      { id: "A1", label: "靠门一侧（A1）", hint: "可以快进快出", scores: { PS:0, SC:0, SO:5, CO:5, AS:5 } },
+      { id: "A3", label: "靠墙一侧（A3）", hint: "更隐蔽一些", scores: { PS:5, SC:5, SO:0, CO:0, AS:0 } },
+      { id: "WAIT", label: "退出去等", hint: "无论如何不挨着", scores: { PS:25, SC:10, SO:-15, CO:-5, AS:-20 } }
+    ],
+    optimal: null,
+    distribution: { A1: 41, A3: 49, WAIT: 10 },
+    replay: {
+      A1: "你选了'快进快出'策略。靠门=最快脱离。",
+      A3: "你选了'多 30 公分也算 30 公分'。靠墙的微观回避。",
+      WAIT: "你属于 10% 选择等待的人——这与临床心理学所称 paruresis（社会性排尿障碍）光谱有关。不算病，是一种特质。"
+    }
+  },
+  {
+    id: "S4",
+    title: "纹身大哥与小学生",
+    context: "5 个小便池，A1 站着一个肩膀宽阔的纹身大哥（看似刚出健身房），A5 站着一个踮着脚的小学生。中间 3 位空。",
+    layout: { count: 5, occupants: [
+      { tag: "纹身大哥" }, null, null, null, { tag: "小学生·踮脚" }
+    ], entry: "left" },
+    options: [
+      { id: "A2", label: "紧邻 A1（纹身大哥）", hint: "", scores: { PS:-5, SC:-10, SO:0, CO:-5, AS:20 } },
+      { id: "A3", label: "正中（A3）", hint: "对两边都是安全距离", scores: { PS:0, SC:5, SO:5, CO:5, AS:0 } },
+      { id: "A4", label: "紧邻 A5（小学生）", hint: "", scores: { PS:0, SC:-15, SO:-5, CO:-10, AS:5 } }
+    ],
+    optimal: "A3",
+    distribution: { A2: 4, A3: 92, A4: 4 },
+    replay: {
+      A2: "你紧邻了纹身大哥。在中国男性用户中只有约 4% 做这个选择——这是支配性或对刻板印象不敏感的强信号。",
+      A3: "正中是 92% 的安全选择。",
+      A4: "你紧邻了小学生。在公共厕所规范中，成年男性主动靠近陌生儿童被多数人下意识回避。你不是。这不一定意味着什么坏的，但它揭示了你对这条隐性规范的钝感。"
+    }
+  },
+  {
+    id: "S5",
+    title: "洗手台",
+    context: "你结束了，正走向洗手台。前方 3 个洗手台：#1 水龙头开着没人在用（之前的人忘了关），#3 洗手液空了旁边站着一位老人，似乎在等谁递一张纸巾。下个会议还有 3 分钟。",
+    layout: { type: "text" },
+    options: [
+      { id: "A", label: "直接走，不洗手", hint: "时间最重要", scores: { PS:0, SC:-10, SO:-10, CO:-25, AS:5 } },
+      { id: "B", label: "用 #2 快速洗，不管 #1 和老人", hint: "只解决自己的事", scores: { PS:0, SC:-5, SO:0, CO:-10, AS:5 } },
+      { id: "C", label: "用 #2 洗 + 关掉 #1（但不理老人）", hint: "对系统有感", scores: { PS:0, SC:-5, SO:5, CO:15, AS:0 } },
+      { id: "D", label: "用 #2 洗 + 递纸巾给老人（但不关 #1）", hint: "对人有感", scores: { PS:0, SC:15, SO:0, CO:5, AS:-5 } },
+      { id: "E", label: "全做：洗手 + 关 #1 + 递纸巾", hint: "尽责到底", scores: { PS:0, SC:15, SO:5, CO:20, AS:-5 } },
+      { id: "F", label: "只关 #1，自己不洗也不理人", hint: "选择性责任", scores: { PS:0, SC:-5, SO:0, CO:5, AS:0 } }
+    ],
+    optimal: "E",
+    distribution: { A: 8, B: 19, C: 24, D: 17, E: 22, F: 10 },
+    replay: {
+      A: "你选了效率——8% 的诚实选择。这个选择会被多数人评判，但没什么不可以。",
+      B: "你只解决自己的事——19% 的实用主义者。",
+      C: "你修了世界，但没理眼前的人——这是'结构型尽责'。守望者的典型签名：对系统的损耗有感，对在场的人保持距离。",
+      D: "你帮了眼前的人，但没修水龙头——这是'情境型共情'。你对具体的生命有反应，对抽象的浪费无感。",
+      E: "你做了所有事——稀少而完整的尽责者。22% 的人和你一样。这种人在系统里降低了所有人的成本，但常常没有人察觉。",
+      F: "选择性责任——你修了水龙头但没洗手。10% 的有趣选择。"
+    }
+  },
+  {
+    id: "S6",
+    title: "大声打电话",
+    context: "5 个小便池，A2 站着一个中年男正大声打电话（'喂！我现在在外面方便！'）。其他 4 位空。",
+    layout: { count: 5, occupants: [null, { tag: "中年男·打电话" }, null, null, null], entry: "left" },
+    options: [
+      { id: "A1", label: "紧邻打电话者（A1）", hint: "无声压力", scores: { PS:-10, SC:-10, SO:-10, CO:-10, AS:15 } },
+      { id: "A3", label: "另一侧紧邻（A3）", hint: "用墙作缓冲", scores: { PS:-5, SC:-5, SO:0, CO:0, AS:5 } },
+      { id: "A4", label: "中段（A4）", hint: "保持一格距离", scores: { PS:5, SC:5, SO:5, CO:0, AS:0 } },
+      { id: "A5", label: "最远（A5）", hint: "用距离表达态度", scores: { PS:10, SC:10, SO:10, CO:5, AS:-5 } },
+      { id: "WAIT", label: "退出去等", hint: "不与之共处", scores: { PS:15, SC:5, SO:-10, CO:10, AS:-10 } }
+    ],
+    optimal: "A5",
+    distribution: { A1: 3, A3: 8, A4: 17, A5: 62, WAIT: 10 },
+    replay: {
+      A1: "你紧邻了打电话者。这只有 3% 的人会做——一种无声的支配宣示，或对侵扰的钝感。",
+      A3: "你站到了另一侧紧邻位——离他只有一墙之隔。这是个奇怪的选择：你想避开但没避到底。",
+      A4: "你保持了一格距离——温和的回避，没走到极端。",
+      A5: "你用距离表达态度——最远者：62% 的多数派。",
+      WAIT: "你选择不与之共处——10% 的稀缺克制。"
+    }
+  },
+  {
+    id: "S7",
+    title: "镜子前",
+    context: "镜子很大可以容纳 3 个人。左侧有一个年轻男在仔细整理头发，已经站了一会儿。中间和右侧空。你只是想快速看一眼自己有没有问题。",
+    layout: { type: "text" },
+    options: [
+      { id: "A", label: "不照镜子，直接走", hint: "", scores: { PS:0, SC:-5, SO:0, CO:0, AS:0 } },
+      { id: "B", label: "右侧（远离对方），快速一瞥", hint: "标准回避", scores: { PS:5, SC:5, SO:5, CO:0, AS:-5 } },
+      { id: "C", label: "中间，正常照", hint: "不在意被观察", scores: { PS:-5, SC:0, SO:0, CO:0, AS:5 } },
+      { id: "D", label: "左侧（紧邻对方），正常照", hint: "无视他人存在", scores: { PS:-10, SC:-10, SO:-5, CO:0, AS:15 } },
+      { id: "E", label: "等对方走了再照", hint: "完全回避", scores: { PS:15, SC:10, SO:-5, CO:5, AS:-15 } },
+      { id: "F", label: "对镜子里的对方点头打招呼", hint: "社交主动", scores: { PS:0, SC:10, SO:0, CO:0, AS:10 } }
+    ],
+    optimal: null,
+    distribution: { A: 18, B: 52, C: 14, D: 4, E: 8, F: 4 },
+    replay: {
+      A: "你避免了整个互动——18% 的极简派。",
+      B: "你避开了对方的视线区——52% 的标准回避者。",
+      C: "你站正中，不在意被观察——14% 的不防御者。",
+      D: "你紧邻了对方——4% 的支配/钝感者。这要么是高自信，要么是社交雷达失灵。",
+      E: "你等对方先走——8% 的极致回避者。",
+      F: "你点了头——4% 的社交主动者。这在中国男厕几乎是异类信号。"
+    }
+  },
+  {
+    id: "S8",
+    title: "离场让门",
+    context: "你走向出口，门是手推门。你身后约 2 米：一个手里拿满文件、行动不便的男士。门外：另一群人正要进来。",
+    layout: { type: "text" },
+    options: [
+      { id: "A", label: "正常推门走出，门自动关上", hint: "不管身后人", scores: { PS:0, SC:-10, SO:0, CO:-10, AS:5 } },
+      { id: "B", label: "推门走出后回头看一眼，但继续走", hint: "", scores: { PS:0, SC:0, SO:0, CO:0, AS:0 } },
+      { id: "C", label: "扶住门让身后人通过后再走", hint: "标准利他", scores: { PS:0, SC:10, SO:5, CO:10, AS:0 } },
+      { id: "D", label: "退一步让身后人先出", hint: "完全让位", scores: { PS:0, SC:5, SO:-5, CO:5, AS:-10 } },
+      { id: "E", label: "推到最大，让多方同时通过", hint: "最优协调", scores: { PS:0, SC:15, SO:15, CO:10, AS:5 } }
+    ],
+    optimal: "E",
+    distribution: { A: 23, B: 31, C: 32, D: 4, E: 10 },
+    replay: {
+      A: "你直接走了——23% 的诚实选择。",
+      B: "你回头看了——31% 的中性者。意识到了，但没行动。",
+      C: "你扶了门——32% 的标准利他者。",
+      D: "你退一步——4% 的过度让位者。",
+      E: "你做了多方协调——10% 的最优解。这是协调者类型的招牌动作。"
+    }
+  }
+];
+
+// ============================================================
+// 4 类型原型
+// ============================================================
+const PROTOTYPES = {
+  watcher:     { PS: 80, SC: 75, SO: 60, CO: 65, AS: 35 },
+  coordinator: { PS: 55, SC: 80, SO: 85, CO: 80, AS: 55 },
+  claimer:     { PS: 35, SC: 35, SO: 55, CO: 35, AS: 80 },
+  flow:        { PS: 50, SC: 55, SO: 45, CO: 55, AS: 50 }
+};
+
+const TYPE_INFO = {
+  watcher: {
+    name: "守望者",
+    nameEn: "The Watcher",
+    slogan: "距离即自由",
+    sub: "你天生懂得：最舒服的状态，是看得见所有人，但没人离你太近。",
+    pct: 22,
+    radarSummary: "你的空间感和社会嗅觉双高，秩序心也在 65 分以上。这是守望者的典型轮廓——你不躲避世界，你只是给自己留一段恰好的距离。",
+    profile: [
+      "你最先觉察空间。走进任何一个房间，你的脚自动找到那张能看见门、且没人会从你背后经过的椅子。这不是社交焦虑，是一种生物级别的雷达——你不是怕人，你是在校准距离。",
+      "在你的世界里，<strong>舒服</strong>有一个准确的定义：能看见所有人，但没人离你太近。会议时你坐在端头；电梯里你靠墙；地铁里你走到那节最空的车厢。别人觉得你慢半拍，其实你只是在选位。",
+      "你的优势是<strong>感知</strong>——很少人能像你一样，三秒之内读出一个房间的能量分布。所以你常常是团队里最先察觉异常的人，也是最不容易被裹挟进糟糕决定的人。",
+      "代价是<strong>你的预热慢</strong>。陌生场合你需要一段时间才能进入状态；新关系建立的速度只有别人一半。但一旦你真的'进来'了，你的稳定度比谁都高——你的朋友圈不大，但每个都是经过你雷达层层筛选的。",
+      "适合你的工作环境：有自己的物理或心理边界；任务可以独立完成或小团队协作；不被频繁的'突然打断'消耗。你天然适合做研究、深度分析、独立创作，或者那些需要'在场但不出风头'的角色。"
+    ],
+    question: "你最近一次'被迫挨近一个不喜欢的人'是什么时候？你是怎么处理的？",
+    celebrity: { name: "鲁迅式", note: "深度感知 + 长期酝酿，不轻易出手但出手即定调" }
+  },
+  coordinator: {
+    name: "协调者",
+    nameEn: "The Coordinator",
+    slogan: "考虑下一个人，是因为你也曾是下一个人",
+    sub: "你做选择时，脑中有一张看不见的地图——上面不仅有你自己，还有还没出现的人。",
+    pct: 24,
+    radarSummary: "你的棋盘思维和社会嗅觉都在 75 分以上，秩序心 70+。这三项的同时高分是协调者的标志——你既能看清他人，又能推演未来。",
+    profile: [
+      "你的脑中有一张看不见的地图。上面有你、有现在的人、还有还没进来的人。你做的每个选择都在这张图上做最优化——不是为了完美，而是为了'对所有人都还行'。",
+      "你<strong>下棋时多看三步</strong>。这不是因为你聪明，而是因为你的注意力天然分给了'接下来会发生什么'。别人到达决定时，你已经走完了三个分支。",
+      "你的优势是<strong>整合</strong>。你不是最有创意的，也不是最果断的，但你是那个能让一群高手不互相踩到的人。复杂系统在你眼里是有秩序的——你看得见齿轮咬合的位置。",
+      "代价是<strong>你容易疲倦</strong>。多数人活在自己的视角里，你的视角永远在切换。另一个代价是<strong>别人不一定看得见你的工作</strong>。协调是一种降低了所有人成本的工作，但所有人都把降低后的成本当作默认值。",
+      "适合你的工作环境：有复杂的多方协作；需要长期的、非英雄式的贡献；管理者能识别'无声的高质量'。典型角色——产品经理、项目经理、合伙人型律师、技术架构师、任何'系统的守护者'。"
+    ],
+    question: "你最近一次'为别人多想了一步，但没有人注意到'是什么事？",
+    celebrity: { name: "诸葛亮式", note: "多看三步 + 系统思维，不靠武力但靠算度赢" }
+  },
+  claimer: {
+    name: "占位者",
+    nameEn: "The Claimer",
+    slogan: "你来晚了，不是我的问题",
+    sub: "你看到资源就拿，看到位置就占。在效率和礼貌之间，你毫不犹豫选前者。",
+    pct: 18,
+    radarSummary: "你的占位力非常突出，其他维度相对较低。这不是缺陷——这是一种被低估的'决策成本节省者'特质。",
+    profile: [
+      "你不犹豫。看到位置就坐，看到机会就上，看到资源就拿——别人在权衡的时候，你已经在执行。这种气质让你在很多场景里赢，但也让你在很多场景里被人记恨——而你常常不知道为什么。",
+      "你的世界很简单：明面规则之外的潜规则，你不太关心。你不是不懂，你是觉得没必要。你信奉的是<strong>显性效率</strong>——能用 30 秒解决的事不要花 3 分钟做心理博弈。",
+      "你的优势是<strong>速度和清晰度</strong>。你不会被无关信号牵制，决策成本很低。在那些'先到先得''谁先举手谁赢'的场景里，你天然占优。",
+      "代价有两个。一是<strong>你常被解读为粗糙</strong>——别人觉得你不顾及他们，你觉得他们想太多。二是<strong>你看不见的成本</strong>——你拿到的东西的价格，常常被默默由别人替你支付。",
+      "适合你的工作环境：竞争激烈、目标明确、绩效可量化；不要把你放在需要长期柔性维系关系的位置上。典型角色——销售、创业者、交易员、运营、危机响应、竞技体育。在这些领域里，你的'不犹豫'是最稀缺的资源。"
+    ],
+    question: "你最近一次拿到了一样东西，但事后发现别人为此付出了你没注意到的代价——是什么时候？",
+    celebrity: { name: "项羽式", note: "力拔山兮 + 不屑细节，赢在锐气，输在没有第二步" }
+  },
+  flow: {
+    name: "随波者",
+    nameEn: "The Flow",
+    slogan: "大多数人怎么做，我就怎么做",
+    sub: "你不浪费时间纠结。规范在哪里，你的脚就在哪里——这是被严重低估的智慧。",
+    pct: 36,
+    radarSummary: "你的所有维度都接近中位数。这不是平庸——这是一种'省电模式'：把心力存起来，留给真正重要的少数决定。",
+    profile: [
+      "你最大的特征是——<strong>没有特征</strong>。这不是缺点，这是一种被严重低估的智慧。在每个维度上，你都接近中位数；在每个选择上，你都跟随大多数。",
+      "但请不要误解：你不是没有想法，你是<strong>懒得为没必要的事消耗自己</strong>。当一个选择的成本和收益差异不大时，你直接选最省力的那个。这听起来平庸，但人类大部分日常决策实际上不应该消耗心力——你只是比别人更早识破了这一点。",
+      "你的优势是<strong>适应性</strong>。极端类型的人在新环境里需要重新校准，而你天然贴合任何系统的'默认设置'。你不是被动的，你是<strong>省电模式专家</strong>。",
+      "代价是<strong>你的轮廓在群体中容易模糊</strong>。如果一个组织只奖励'鲜明特征'，你会被低估。但你不在乎——因为被高估的代价，常常是被消耗。另一个代价是<strong>当大多数人错的时候，你也跟着错</strong>。",
+      "适合你的工作环境：需要稳定输出而不是创造性突破；团队默契高于个人英雄主义；能容忍'看似平凡但极其可靠'的贡献者。在这些角色里，你不是聚光灯下的那个，但你是没了你整个系统会塌的那个。"
+    ],
+    question: "你最近一次'明明觉得不对劲，但还是跟着大家做了'是什么事？",
+    celebrity: { name: "薛宝钗式", note: "看似从众实则深算，把'随波'变成了高级生存策略" }
+  }
+};
+
+const DIM_INFO = {
+  PS: { name: "空间感", high: "你需要看不见的边界", low: "你不在意身体距离" },
+  SC: { name: "社会嗅觉", high: "你能读懂潜台词", low: "你不被无形规则牵制" },
+  SO: { name: "棋盘思维", high: "你下棋多看三步", low: "你相信当下直觉" },
+  CO: { name: "秩序心", high: "你修复看到的不对劲", low: "你专注于自己的事" },
+  AS: { name: "占位力", high: "你不为不必要的让步", low: "你善于退一步" }
+};
+
+const DECISION_STYLES = {
+  lightning: { name: "闪电决策者", line: "你的脑子是个判断机，不是会议室。决策成本极低，是你的隐藏优势。" },
+  deliberate: { name: "审慎权衡者", line: "你的每个决定都是熬出来的。慢，但稳定可靠。" },
+  iterative: { name: "反复推演者", line: "你在脑中下完了完整的棋。这种纠结，是认真。" },
+  swaying: { name: "直觉摇摆者", line: "你的不确定，是你诚实的标志。比假装坚定的人更接近真相。" },
+  balanced: { name: "平衡决策者", line: "你不偏向任何极端，根据情境调整你的决策深度。" }
+};
+
+// ============================================================
+// 后端：Supabase（研究数据收集）
+// ============================================================
+const SUPABASE_URL = 'https://xwrejjytrbpkundisuyr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XBIxHbOkqvgQwoVmyuuUYg_dPmYsfr5';
+const PROJECT_SLUG = 'distance';
+const PROJECT_VERSION = 'v0.1';
+
+function uploadResult(record) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return Promise.resolve();
+  return fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({
+      project_slug: PROJECT_SLUG,
+      project_version: PROJECT_VERSION,
+      anonymous_id: record.anonymous_id,
+      started_at: new Date(record.start_time).toISOString(),
+      completed_at: new Date(record.end_time).toISOString(),
+      duration_ms: record.total_duration,
+      user_agent: record.user_agent,
+      payload: { scenes: record.scenes },
+      summary: {
+        scores: record.scores,
+        type_result: record.type_result,
+        decision_style: record.decision_style
+      }
+    }),
+    keepalive: true
+  }).then(res => {
+    if (!res.ok) console.warn('[upload] HTTP', res.status);
+  }).catch(e => {
+    console.warn('[upload] failed:', e);
+  });
+}
+
+// ============================================================
+// 匿名 ID（跨会话稳定）
+// ============================================================
+function getAnonymousId() {
+  try {
+    let id = localStorage.getItem('distance_anonymous_id');
+    if (!id) {
+      id = (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'a-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('distance_anonymous_id', id);
+    }
+    return id;
+  } catch (e) {
+    return 'a-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+}
+
+// ============================================================
+// 挑战链接编解码（用于"挑战朋友"功能）
+// ============================================================
+function encodeChallenge(primary, scores, decisionStyle) {
+  const data = { p: primary, s: scores, d: decisionStyle };
+  const json = JSON.stringify(data);
+  return btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function decodeChallenge(s) {
+  try {
+    const padded = s.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(escape(atob(padded)));
+    const parsed = JSON.parse(json);
+    if (!parsed || !parsed.p || !parsed.s || !TYPE_INFO[parsed.p]) return null;
+    const dims = ['PS','SC','SO','CO','AS'];
+    for (const d of dims) {
+      if (typeof parsed.s[d] !== 'number') return null;
+    }
+    return parsed;
+  } catch (e) { return null; }
+}
+
+let urlFriend = null;
+function detectFriend() {
+  const m = (window.location.hash || '').match(/^#c=([A-Za-z0-9_-]+)$/);
+  urlFriend = m ? decodeChallenge(m[1]) : null;
+}
+
+// ============================================================
+// 状态管理
+// ============================================================
+let state = {
+  anonymousId: null,
+  currentScene: 0,
+  scenes: [],
+  startTime: 0,
+  sceneStartTime: 0,
+  currentSelection: null,
+  currentChangeCount: 0,
+  currentInitial: null,
+  currentResponseTime: 0,
+  commitTimer: null,
+  scores: { PS: 50, SC: 50, SO: 50, CO: 50, AS: 50 }
+};
+
+const app = document.getElementById('app');
+
+// ============================================================
+// 渲染：启动屏
+// ============================================================
+function renderSplash() {
+  const friendBanner = urlFriend ? `
+    <div class="challenge-banner">
+      <div class="challenge-banner-eyebrow">— 来自朋友的挑战 —</div>
+      <div class="challenge-banner-text">
+        你的朋友是 <strong>${TYPE_INFO[urlFriend.p].name}</strong>（${TYPE_INFO[urlFriend.p].nameEn}）。<br>
+        做完测试后，你会看到你和 ta 在 5 个维度上的差距。
+      </div>
+    </div>
+  ` : '';
+
+  app.innerHTML = `
+    <div class="splash view">
+      <div class="splash-meta">
+        <span>距离 / DISTANCE</span>
+        <span>v0.1 · 2026</span>
+      </div>
+      <div class="splash-hero">
+        <div class="splash-eyebrow">— 一份关于你如何选择位置的研究 —</div>
+        <h1 class="splash-title">距离<br>是<em>另一种</em><br>语言</h1>
+        <p class="splash-sub">如厕，是这个时代少数还需要做选择的时刻。<br>选哪个位置，泄露的是你怎么处理"和别人共处"。</p>
+        ${friendBanner}
+        <div class="splash-meta-info">
+          <div class="meta-cell">场景<strong>8 个</strong></div>
+          <div class="meta-cell">时长<strong>≈ 5 分</strong></div>
+          <div class="meta-cell">类型<strong>4 种</strong></div>
+        </div>
+        <div class="consent">
+          <div class="consent-eyebrow">— 数据透明声明 —</div>
+          <h3 class="consent-title">开始前，请知晓我们会记录哪些信息</h3>
+          <ul class="consent-list">
+            <li>你的 <strong>8 个场景选择</strong>（含初始选项、最终选项、首次反应时间、最终决定时间、改变心意次数）</li>
+            <li>由此计算出的 <strong>5 维度分数</strong>（PS / SC / SO / CO / AS）、<strong>4 类型映射</strong>结果与<strong>决策风格</strong>标签</li>
+            <li>你浏览器的 <strong>User-Agent 字符串</strong>（用于设备分布与跨设备体验分析）</li>
+            <li>一个仅存在于你浏览器本地的 <strong>匿名 ID</strong>（随机 UUID，不含姓名 / 邮箱 / 电话 / 位置 / IP）</li>
+          </ul>
+          <p class="consent-note">数据流向：上述记录在测试完成后会<strong>自动上传到我们的研究后端</strong>（托管于 Supabase），仅用于群体分布统计与 4 类型原型的真实数据校准。同一份数据也会保存在你本设备的 localStorage 中用于回访。<br><br>我们<strong>不收集</strong>任何可定位到你本人的信息（无姓名、邮箱、手机号、IP 与精确位置）；匿名 UUID 仅在你浏览器内生成，与你的真实身份无任何关联。</p>
+          <label class="consent-check">
+            <input type="checkbox" id="consent-checkbox" onchange="onConsentChange()">
+            <span>我已阅读并同意上述数据用于本次评估与（在我主动选择时的）研究分析</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <button class="btn-primary" id="start-btn" onclick="startTest()" disabled>${urlFriend ? '接受挑战 →' : '我准备好了 →'}</button>
+        <p class="splash-disclaimer">基于 Gerlach et al. (2018, Nature Human Behaviour) 的四类型框架与情境判断测试理论。匿名、不收集身份信息。</p>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 授权同意
+// ============================================================
+function onConsentChange() {
+  const cb = document.getElementById('consent-checkbox');
+  const btn = document.getElementById('start-btn');
+  if (cb && btn) btn.disabled = !cb.checked;
+}
+
+// ============================================================
+// 启动测试
+// ============================================================
+function startTest() {
+  state = {
+    anonymousId: getAnonymousId(),
+    currentScene: 0,
+    scenes: [],
+    startTime: Date.now(),
+    sceneStartTime: 0,
+    currentSelection: null,
+    currentChangeCount: 0,
+    currentInitial: null,
+    currentResponseTime: 0,
+    commitTimer: null,
+    scores: { PS: 50, SC: 50, SO: 50, CO: 50, AS: 50 }
+  };
+  renderScene();
+}
+
+// ============================================================
+// 渲染：场景屏
+// ============================================================
+function renderScene() {
+  const idx = state.currentScene;
+  const scene = SCENES[idx];
+  state.sceneStartTime = Date.now();
+  state.currentSelection = null;
+  state.currentChangeCount = 0;
+  state.currentInitial = null;
+  state.currentResponseTime = 0;
+  if (state.commitTimer) { clearTimeout(state.commitTimer); state.commitTimer = null; }
+
+  let diagramHTML = '';
+  if (scene.layout.count) {
+    const occupants = scene.layout.occupants;
+    const idLetter = scene.layout.count === 3 ? ['A1','A2','A3'] : ['A1','A2','A3','A4','A5'];
+    diagramHTML = `
+      <div class="diagram">
+        <div class="diagram-label">俯视图 / TOP VIEW</div>
+        <div class="urinal-row">
+          <div class="entry-marker">入口 →</div>
+          ${occupants.map((occ, i) => `
+            <div class="urinal ${occ ? 'occupied' : ''}">
+              <span class="urinal-id">${idLetter[i]}</span>
+              ${occ ? `<div class="person-icon"></div><div class="person-tag">${occ.tag}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const totalScenes = SCENES.length;
+  const progressPct = ((idx) / totalScenes) * 100;
+
+  app.innerHTML = `
+    <div class="scene view">
+      <div class="scene-header">
+        <span class="scene-progress"><strong>${String(idx+1).padStart(2,'0')}</strong> / ${String(totalScenes).padStart(2,'0')}</span>
+        <span class="scene-title">${scene.id} · 场景</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width: ${progressPct}%"></div></div>
+
+      <h2 class="scene-h1">${scene.title}</h2>
+      <p class="scene-context">${scene.context}</p>
+
+      ${diagramHTML}
+
+      <div class="choices">
+        <div class="choice-prompt">— 你会怎么做 —</div>
+        ${scene.options.map((opt, i) => `
+          <button class="choice-btn" data-id="${opt.id}" onclick="pickOption('${opt.id}')">
+            <span class="choice-marker">${String.fromCharCode(65 + i)}</span>
+            <span class="choice-label">
+              ${opt.label}
+              ${opt.hint ? `<div class="choice-hint">${opt.hint}</div>` : ''}
+            </span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 选择处理
+// ============================================================
+function pickOption(optId) {
+  const scene = SCENES[state.currentScene];
+  const opt = scene.options.find(o => o.id === optId);
+
+  // 首次点击：记录响应时间与初始选择
+  if (state.currentInitial === null) {
+    state.currentInitial = optId;
+    state.currentResponseTime = Date.now() - state.sceneStartTime;
+  } else if (state.currentSelection !== optId) {
+    // 后续点击且与当前选中不同 → 改变心意
+    state.currentChangeCount++;
+  }
+
+  // 高亮选中
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.id === optId);
+  });
+  state.currentSelection = optId;
+
+  // 取消上一次排队的 commit，0.4 秒后提交当前选择
+  if (state.commitTimer) clearTimeout(state.commitTimer);
+  state.commitTimer = setTimeout(() => commitChoice(optId, opt), 400);
+}
+
+function commitChoice(optId, opt) {
+  const scene = SCENES[state.currentScene];
+  const decisionTime = Date.now() - state.sceneStartTime;
+
+  // 应用分数
+  for (const dim in opt.scores) {
+    state.scores[dim] += opt.scores[dim];
+  }
+
+  // 记录这一场景
+  state.scenes.push({
+    scene_id: scene.id,
+    final_choice: optId,
+    initial_choice: state.currentInitial,
+    response_time: state.currentResponseTime,
+    decision_time: decisionTime,
+    change_count: state.currentChangeCount
+  });
+
+  // 下一场或结束
+  state.currentScene++;
+  if (state.currentScene >= SCENES.length) {
+    renderComputing();
+  } else {
+    renderScene();
+    window.scrollTo(0, 0);
+  }
+}
+
+// ============================================================
+// 计算中过场
+// ============================================================
+function renderComputing() {
+  app.innerHTML = `
+    <div class="computing view">
+      <div class="computing-dots">··· ···</div>
+      <p class="computing-text">正在分析你的<br>5 个维度与 8 个选择...</p>
+    </div>
+  `;
+  setTimeout(() => {
+    finalizeAndRender();
+  }, 1800);
+}
+
+// ============================================================
+// 计算 + 渲染结果
+// ============================================================
+function finalizeAndRender() {
+  // 钳制分数 0-100
+  for (const dim in state.scores) {
+    state.scores[dim] = Math.max(0, Math.min(100, state.scores[dim]));
+  }
+
+  // 类型映射
+  const distances = {};
+  for (const [type, proto] of Object.entries(PROTOTYPES)) {
+    distances[type] = Math.sqrt(
+      Object.keys(proto).reduce((sum, dim) =>
+        sum + Math.pow(state.scores[dim] - proto[dim], 2), 0)
+    );
+  }
+  const sorted = Object.entries(distances).sort((a, b) => a[1] - b[1]);
+  const primary = sorted[0][0];
+  const secondary = sorted[1][0];
+  // 距离反比 → 权重
+  const totalInv = (1 / sorted[0][1]) + (1 / sorted[1][1]);
+  const primaryWeight = Math.round(((1 / sorted[0][1]) / totalInv) * 100);
+  const isPure = primaryWeight >= 60;
+
+  // 决策风格（PRD §4.3：RT 用首次点击的响应时间）
+  const rtAvg = state.scenes.reduce((a, s) => a + s.response_time, 0) / state.scenes.length;
+  const totalChanges = state.scenes.reduce((a, s) => a + s.change_count, 0);
+  let style;
+  if (rtAvg < 2000 && totalChanges === 0) style = "lightning";
+  else if (rtAvg > 5000 && totalChanges <= 2) style = "deliberate";
+  else if (totalChanges > 3) style = "iterative";
+  else if (rtAvg > 4000 && totalChanges > 2) style = "swaying";
+  else style = "balanced";
+
+  const endTime = Date.now();
+  const totalDuration = endTime - state.startTime;
+  const secondaryWeight = isPure ? 0 : (100 - primaryWeight);
+
+  state.result = {
+    primary, secondary, primaryWeight, secondaryWeight, isPure,
+    decisionStyle: style,
+    rtAvg, totalChanges,
+    endTime, totalDuration
+  };
+
+  // 完整 TestResult 结构（PRD §5）
+  state.fullRecord = {
+    anonymous_id: state.anonymousId,
+    start_time: state.startTime,
+    end_time: endTime,
+    total_duration: totalDuration,
+    user_agent: navigator.userAgent,
+    scenes: state.scenes,
+    scores: { ...state.scores },
+    type_result: {
+      primary,
+      secondary: isPure ? null : secondary,
+      primaryWeight,
+      secondaryWeight
+    },
+    decision_style: style
+  };
+
+  // 持久化（用于回访）
+  try {
+    localStorage.setItem('distance_test_result', JSON.stringify(state.fullRecord));
+  } catch(e) {}
+
+  // 异步上传到研究后端，不阻塞结果渲染
+  uploadResult(state.fullRecord);
+
+  renderResult();
+}
+
+// ============================================================
+// 渲染结果页
+// ============================================================
+function renderResult() {
+  const r = state.result;
+  const info = TYPE_INFO[r.primary];
+  const secInfo = !r.isPure ? TYPE_INFO[r.secondary] : null;
+
+  // 1. 区块 1：身份揭晓
+  const revealHTML = `
+    <div class="reveal">
+      <div class="reveal-eyebrow">你的类型是</div>
+      <h1 class="reveal-name">${info.name}${secInfo ? ` <span class="reveal-name-mix">× ${secInfo.name}</span>` : ''}</h1>
+      <div class="reveal-name-en">${info.nameEn}${secInfo ? ` / ${secInfo.nameEn}` : ''}</div>
+      <div class="reveal-slogan">${info.slogan}</div>
+      <p class="reveal-sub">${info.sub}</p>
+      ${secInfo ? `<p class="reveal-sub-mix">你也带有 <strong>${r.secondaryWeight}%</strong> 的<strong>${secInfo.name}</strong>特质——${secInfo.sub}</p>` : ''}
+      <div class="reveal-meta">
+        <div class="meta-stat">${r.isPure ? '类型纯度' : '主类型权重'}<strong>${r.primaryWeight}%</strong></div>
+        <div class="meta-stat">${r.isPure ? '稀有度' : '次类型'}<strong>${r.isPure ? `属于 ${info.pct}%` : `${secInfo.name} ${r.secondaryWeight}%`}</strong></div>
+      </div>
+    </div>
+  `;
+
+  // 2. 区块 2：博弈论复盘
+  const replayHTML = `
+    <div class="section">
+      <div class="section-eyebrow">— 第二部分 —</div>
+      <h2 class="section-title">博弈论复盘</h2>
+      <p class="section-sub">把你的 8 个选择放回数学和群体里看一遍。</p>
+      ${state.scenes.map((s, idx) => renderReplayCard(s, idx)).join('')}
+    </div>
+  `;
+
+  // 3. 区块 3：维度雷达图
+  const radarHTML = `
+    <div class="section">
+      <div class="section-eyebrow">— 第三部分 —</div>
+      <h2 class="section-title">五维剖面</h2>
+      <p class="section-sub">你的得分（红） vs 你的类型原型（虚线）。</p>
+      <div class="radar-container">${renderRadar(r.primary)}</div>
+      <div class="radar-stats">
+        ${['PS','SC','SO','CO','AS'].map(d => {
+          const v = state.scores[d];
+          const note = v >= 60 ? DIM_INFO[d].high : (v <= 40 ? DIM_INFO[d].low : '中位');
+          const tone = v >= 60 ? 'high' : (v <= 40 ? 'low' : 'mid');
+          return `
+            <div class="radar-stat">
+              <div class="radar-stat-label">${d}</div>
+              <div class="radar-stat-name">${DIM_INFO[d].name}</div>
+              <div class="radar-stat-value">${v}</div>
+              <div class="radar-stat-note tone-${tone}">${note}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="radar-summary">${info.radarSummary}</div>
+    </div>
+  `;
+
+  // 4. 区块 4：人物志
+  const profileHTML = `
+    <div class="section">
+      <div class="section-eyebrow">— 第四部分 —</div>
+      <h2 class="section-title">完整人物志</h2>
+      <p class="section-sub">${info.name}：${info.slogan}</p>
+      <div class="profile">
+        ${info.profile.map(p => `<p>${p}</p>`).join('')}
+      </div>
+      <div class="profile-question">${info.question}</div>
+    </div>
+  `;
+
+  // 5. 区块 5：决策风格 + 分享 + 免责声明
+  const styleInfo = DECISION_STYLES[r.decisionStyle];
+  const styleHTML = `
+    <div class="section">
+      <div class="section-eyebrow">— 第五部分 —</div>
+      <h2 class="section-title">决策风格</h2>
+      <p class="section-sub">这是你"怎么决定"的风格，独立于"决定了什么"。</p>
+      <div class="style-card">
+        <div class="style-name">${styleInfo.name}</div>
+        <div class="style-line">${styleInfo.line}</div>
+        <div class="style-stats">
+          <div>
+            <div class="style-stat-label">平均反应时</div>
+            <div class="style-stat-val">${(r.rtAvg/1000).toFixed(1)} 秒</div>
+          </div>
+          <div>
+            <div class="style-stat-label">改变心意次数</div>
+            <div class="style-stat-val">${r.totalChanges}</div>
+          </div>
+        </div>
+      </div>
+      <div class="celebrity">
+        <div class="celebrity-eyebrow">— 名人映射 —</div>
+        <div class="celebrity-name">${info.celebrity.name}</div>
+        <div>${info.celebrity.note}</div>
+      </div>
+      <div class="actions">
+        <button class="action-btn primary" onclick="downloadShareCard()">
+          <span>保存分享卡片（PNG）</span><span class="action-btn-arrow">↓</span>
+        </button>
+        <button class="action-btn primary" onclick="copyChallengeUrl()">
+          <span>挑战朋友（复制链接）</span><span class="action-btn-arrow">→</span>
+        </button>
+        <button class="action-btn" onclick="copyShareText()">
+          <span>复制纯文字分享</span><span class="action-btn-arrow">→</span>
+        </button>
+        <button class="action-btn" onclick="copyResearchData()">
+          <span>复制研究数据（给研究者）</span><span class="action-btn-arrow">→</span>
+        </button>
+        <button class="action-btn" onclick="if(confirm('重新开始测试吗？')){ window.location.hash=''; urlFriend=null; renderSplash(); }">
+          <span>重新测试</span><span class="action-btn-arrow">↻</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  const disclaimerHTML = `
+    <div class="disclaimer">
+      <div class="disclaimer-title">关于这个测试的诚实交代</div>
+      这个工具基于 Gerlach et al. (2018) 在 <em>Nature Human Behaviour</em> 发表的"四类人格"研究和情境判断测试（SJT）理论框架。8 个场景的多维聚合相当于一份微型 SJT 量表。但你需要知道：
+      <ul>
+        <li>单次测试的预测效度上限约为 r = 0.4，结果对你的描述准确度大约 60%。</li>
+        <li>人格不是固定标签——你的类型可能随年龄、环境、生活阶段变化。</li>
+        <li>这个工具适合自我探索和与朋友讨论，不适合作为职业选择或评判他人的依据。</li>
+      </ul>
+    </div>
+    <div class="footer">DISTANCE · v0.1 · 2026</div>
+  `;
+
+  const friendCompareHTML = renderFriendCompare(r);
+
+  app.innerHTML = `<div class="result view">${revealHTML}${friendCompareHTML}${replayHTML}${radarHTML}${profileHTML}${styleHTML}${disclaimerHTML}</div>`;
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// 渲染：博弈论复盘卡片
+// ============================================================
+function renderReplayCard(sceneRecord, idx) {
+  const scene = SCENES[idx];
+  const userChoice = sceneRecord.final_choice;
+  const dist = scene.distribution;
+
+  const barRows = scene.options.map(opt => {
+    const pct = dist[opt.id] || 0;
+    const isUser = opt.id === userChoice;
+    return `
+      <div class="replay-bar-row ${isUser ? 'user' : ''}">
+        <span class="replay-bar-id">${opt.id}</span>
+        <div class="replay-bar-track"><div class="replay-bar-fill" style="width: ${pct}%"></div></div>
+        <span class="replay-bar-pct">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+
+  const userOpt = scene.options.find(o => o.id === userChoice);
+  const optimalLabel = scene.optimal
+    ? scene.options.find(o => o.id === scene.optimal)?.label || ''
+    : '本场景无单一最优解';
+
+  return `
+    <div class="replay-card">
+      <div class="replay-head">
+        <span class="replay-num">场景 ${String(idx+1).padStart(2,'0')}</span>
+        <span class="replay-name">${scene.title}</span>
+      </div>
+      <div class="replay-row user">
+        <span class="replay-row-label">你选了</span>
+        <span class="replay-row-value">${userOpt.label}</span>
+      </div>
+      <div class="replay-row">
+        <span class="replay-row-label">数学/最优</span>
+        <span class="replay-row-value" style="color: var(--ink-soft)">${optimalLabel}</span>
+      </div>
+      <div class="replay-bar-container">
+        ${barRows}
+      </div>
+      <div class="replay-msg">${scene.replay[userChoice]}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 渲染：雷达图（SVG）
+// ============================================================
+function renderRadar(primaryType) {
+  const dims = ['PS','SC','SO','CO','AS'];
+  const labels = ['空间感','社会嗅觉','棋盘思维','秩序心','占位力'];
+  const proto = PROTOTYPES[primaryType];
+
+  const cx = 180, cy = 180, r = 130;
+  const angle = (i) => -Math.PI/2 + (i * 2 * Math.PI / 5);
+
+  function point(value, i) {
+    const ratio = value / 100;
+    return [cx + Math.cos(angle(i)) * r * ratio, cy + Math.sin(angle(i)) * r * ratio];
+  }
+
+  // 背景同心五边形
+  const rings = [0.2, 0.4, 0.6, 0.8, 1.0].map(rr => {
+    const pts = dims.map((_, i) => {
+      const x = cx + Math.cos(angle(i)) * r * rr;
+      const y = cy + Math.sin(angle(i)) * r * rr;
+      return `${x},${y}`;
+    }).join(' ');
+    return `<polygon points="${pts}" fill="none" stroke="#D4CCB8" stroke-width="0.5"/>`;
+  }).join('');
+
+  // 轴线
+  const axes = dims.map((_, i) => {
+    const [x, y] = point(100, i);
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#D4CCB8" stroke-width="0.5"/>`;
+  }).join('');
+
+  // 原型轮廓（虚线）
+  const protoPoints = dims.map((d, i) => point(proto[d], i)).map(p => p.join(',')).join(' ');
+  const protoShape = `<polygon points="${protoPoints}" fill="none" stroke="#8A8278" stroke-width="1" stroke-dasharray="4,3"/>`;
+
+  // 用户分数（实心）
+  const userPoints = dims.map((d, i) => point(state.scores[d], i)).map(p => p.join(',')).join(' ');
+  const userShape = `<polygon points="${userPoints}" fill="rgba(196, 69, 54, 0.25)" stroke="#C44536" stroke-width="2"/>`;
+
+  // 数据点
+  const dots = dims.map((d, i) => {
+    const [x, y] = point(state.scores[d], i);
+    return `<circle cx="${x}" cy="${y}" r="3.5" fill="#C44536"/>`;
+  }).join('');
+
+  // 标签
+  const lbls = dims.map((d, i) => {
+    const [x, y] = point(118, i);
+    let anchor = 'middle';
+    if (i === 1 || i === 2) anchor = 'start';
+    if (i === 3 || i === 4) anchor = 'end';
+    return `<text x="${x}" y="${y+4}" text-anchor="${anchor}" font-family="Noto Serif SC, serif" font-size="13" font-weight="500" fill="#1A1714">${labels[i]}</text>`;
+  }).join('');
+
+  return `
+    <svg class="radar-svg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+      ${rings}
+      ${axes}
+      ${protoShape}
+      ${userShape}
+      ${dots}
+      ${lbls}
+    </svg>
+  `;
+}
+
+// ============================================================
+// 挑战对照模块（结果页）
+// ============================================================
+function renderFriendCompare(r) {
+  const f = urlFriend;
+  if (!f) return '';
+  const dims = ['PS','SC','SO','CO','AS'];
+  const meName = TYPE_INFO[r.primary].name;
+  const friendName = TYPE_INFO[f.p].name;
+  const sameType = r.primary === f.p;
+
+  const diffs = dims.map(d => ({
+    dim: d, name: DIM_INFO[d].name,
+    me: state.scores[d], friend: f.s[d],
+    delta: state.scores[d] - f.s[d]
+  }));
+  const biggest = [...diffs].sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta))[0];
+
+  const dualRadar = renderDualRadar(state.scores, f.s);
+
+  const headline = sameType
+    ? `你和朋友都是 <strong>${meName}</strong>。`
+    : `你是 <strong>${meName}</strong>，朋友是 <strong>${friendName}</strong>。`;
+  const biggestLine = biggest.delta === 0
+    ? '在 5 个维度上，你和朋友几乎完全一致——这是稀有的相遇。'
+    : `差距最大的维度是<strong>${biggest.name}</strong>——你${biggest.delta > 0 ? '高' : '低'}于 ta <strong>${Math.abs(biggest.delta)}</strong> 分。`;
+
+  return `
+    <div class="section">
+      <div class="section-eyebrow">— 朋友挑战 —</div>
+      <h2 class="section-title">vs 你的朋友</h2>
+      <p class="section-sub">${headline}${biggestLine}</p>
+      <div class="radar-container">${dualRadar}</div>
+      <div class="compare-table">
+        <div class="compare-row compare-head">
+          <span>维度</span><span>你</span><span>朋友</span><span>差</span>
+        </div>
+        ${diffs.map(d => `
+          <div class="compare-row">
+            <span class="compare-dim">${d.name}</span>
+            <span class="compare-me">${d.me}</span>
+            <span class="compare-friend">${d.friend}</span>
+            <span class="compare-delta ${d.delta > 0 ? 'pos' : (d.delta < 0 ? 'neg' : '')}">${d.delta > 0 ? '+' : ''}${d.delta}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderDualRadar(meScores, friendScores) {
+  const dims = ['PS','SC','SO','CO','AS'];
+  const labels = ['空间感','社会嗅觉','棋盘思维','秩序心','占位力'];
+  const cx = 180, cy = 180, r = 130;
+  const angle = (i) => -Math.PI/2 + (i * 2 * Math.PI / 5);
+  const point = (v, i) => [cx + Math.cos(angle(i)) * r * (v/100), cy + Math.sin(angle(i)) * r * (v/100)];
+
+  const rings = [0.2, 0.4, 0.6, 0.8, 1.0].map(rr => {
+    const pts = dims.map((_, i) => `${cx + Math.cos(angle(i)) * r * rr},${cy + Math.sin(angle(i)) * r * rr}`).join(' ');
+    return `<polygon points="${pts}" fill="none" stroke="#D4CCB8" stroke-width="0.5"/>`;
+  }).join('');
+  const axes = dims.map((_, i) => {
+    const [x, y] = point(100, i);
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#D4CCB8" stroke-width="0.5"/>`;
+  }).join('');
+
+  const friendPoints = dims.map((d, i) => point(friendScores[d], i)).map(p => p.join(',')).join(' ');
+  const friendShape = `<polygon points="${friendPoints}" fill="rgba(74, 69, 64, 0.15)" stroke="#4A4540" stroke-width="1.5" stroke-dasharray="5,3"/>`;
+  const mePoints = dims.map((d, i) => point(meScores[d], i)).map(p => p.join(',')).join(' ');
+  const meShape = `<polygon points="${mePoints}" fill="rgba(196, 69, 54, 0.22)" stroke="#C44536" stroke-width="2"/>`;
+
+  const meDots = dims.map((d, i) => { const [x,y]=point(meScores[d], i); return `<circle cx="${x}" cy="${y}" r="3" fill="#C44536"/>`;}).join('');
+  const fDots = dims.map((d, i) => { const [x,y]=point(friendScores[d], i); return `<circle cx="${x}" cy="${y}" r="2.5" fill="#4A4540"/>`;}).join('');
+
+  const lbls = dims.map((d, i) => {
+    const [x, y] = point(118, i);
+    let anchor = 'middle';
+    if (i === 1 || i === 2) anchor = 'start';
+    if (i === 3 || i === 4) anchor = 'end';
+    return `<text x="${x}" y="${y+4}" text-anchor="${anchor}" font-family="Noto Serif SC, serif" font-size="13" font-weight="500" fill="#1A1714">${labels[i]}</text>`;
+  }).join('');
+
+  const legend = `
+    <g font-family="Noto Sans SC, sans-serif" font-size="11">
+      <circle cx="20" cy="340" r="4" fill="#C44536"/>
+      <text x="30" y="344" fill="#1A1714">你</text>
+      <line x1="60" y1="340" x2="76" y2="340" stroke="#4A4540" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="84" y="344" fill="#1A1714">朋友</text>
+    </g>
+  `;
+
+  return `
+    <svg class="radar-svg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+      ${rings}${axes}${friendShape}${meShape}${fDots}${meDots}${lbls}${legend}
+    </svg>
+  `;
+}
+
+// ============================================================
+// 挑战链接 + 分享卡片
+// ============================================================
+function copyChallengeUrl() {
+  const r = state.result;
+  const code = encodeChallenge(r.primary, state.scores, r.decisionStyle);
+  const base = window.location.origin + window.location.pathname;
+  const url = `${base}#c=${code}`;
+  const info = TYPE_INFO[r.primary];
+  const text = `我是【${info.name}】（${info.nameEn}）。\n来挑战看看你和我差多远 →\n${url}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('挑战链接已复制，发给朋友');
+  }).catch(() => {
+    showToast('复制失败');
+  });
+}
+
+function downloadShareCard() {
+  showToast('正在生成分享卡片...');
+  const ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  ready.then(() => {
+    const canvas = drawShareCard();
+    canvas.toBlob(blob => {
+      if (!blob) { showToast('生成失败'); return; }
+      const url = URL.createObjectURL(blob);
+      const info = TYPE_INFO[state.result.primary];
+      const filename = `distance-${info.nameEn.replace(/\s+/g, '-').toLowerCase()}.png`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+        // iOS Safari fallback：另开新窗口让用户长按保存
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          const w = window.open();
+          if (w) {
+            const reader = new FileReader();
+            reader.onload = () => { w.document.write(`<img src="${reader.result}" style="width:100%"/>`); };
+            reader.readAsDataURL(blob);
+          }
+        }
+        showToast('卡片已保存');
+      }, 200);
+    }, 'image/png');
+  });
+}
+
+function drawShareCard() {
+  const W = 750, H = 1334;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  const r = state.result;
+  const info = TYPE_INFO[r.primary];
+  const scores = state.scores;
+
+  // 背景
+  ctx.fillStyle = '#F5F1E8';
+  ctx.fillRect(0, 0, W, H);
+
+  // 纸面纹理（简易点状）
+  ctx.fillStyle = 'rgba(26, 23, 20, 0.025)';
+  for (let i = 0; i < 800; i++) {
+    ctx.fillRect(Math.random()*W, Math.random()*H, 1, 1);
+  }
+
+  // 外框
+  ctx.strokeStyle = '#D4CCB8';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(40, 40, W-80, H-80);
+
+  // 顶部 meta
+  ctx.font = '500 18px "JetBrains Mono", Menlo, monospace';
+  ctx.fillStyle = '#8A8278';
+  ctx.textAlign = 'left';
+  ctx.fillText('DISTANCE / 距离', 70, 100);
+  ctx.textAlign = 'right';
+  ctx.fillText('v0.1 · 2026', W-70, 100);
+  ctx.beginPath();
+  ctx.moveTo(70, 122); ctx.lineTo(W-70, 122);
+  ctx.stroke();
+
+  // eyebrow
+  ctx.textAlign = 'left';
+  ctx.font = '500 16px "JetBrains Mono", Menlo, monospace';
+  ctx.fillStyle = '#C44536';
+  ctx.fillText('— 我的类型 —', 70, 200);
+
+  // 类型名
+  ctx.font = '900 110px "Noto Serif SC", serif';
+  ctx.fillStyle = '#1A1714';
+  ctx.fillText(info.name, 70, 320);
+
+  // 英文名
+  ctx.font = 'italic 24px "Noto Serif SC", serif';
+  ctx.fillStyle = '#8A8278';
+  ctx.fillText(info.nameEn, 70, 360);
+
+  // slogan
+  ctx.font = '500 30px "Noto Serif SC", serif';
+  ctx.fillStyle = '#C44536';
+  wrapText(ctx, `"${info.slogan}"`, 70, 430, W-140, 42);
+
+  // sub
+  ctx.font = '400 22px "Noto Serif SC", serif';
+  ctx.fillStyle = '#4A4540';
+  const subEndY = wrapText(ctx, info.sub, 70, 510, W-140, 36);
+
+  // 雷达图
+  const radarTop = Math.max(subEndY + 20, 600);
+  drawRadarOnCanvas(ctx, W/2, radarTop + 180, 160, scores, PROTOTYPES[r.primary]);
+
+  // 5 维数字带
+  const tableY = radarTop + 380;
+  const dims = ['PS','SC','SO','CO','AS'];
+  const cellW = (W - 140) / 5;
+  dims.forEach((d, i) => {
+    const x = 70 + i * cellW;
+    ctx.fillStyle = '#E8E2D3';
+    ctx.fillRect(x + 4, tableY, cellW - 8, 90);
+    ctx.font = '500 14px "JetBrains Mono", Menlo, monospace';
+    ctx.fillStyle = '#8A8278';
+    ctx.textAlign = 'center';
+    ctx.fillText(d, x + cellW/2, tableY + 22);
+    ctx.font = '500 14px "Noto Serif SC", serif';
+    ctx.fillStyle = '#1A1714';
+    ctx.fillText(DIM_INFO[d].name, x + cellW/2, tableY + 42);
+    ctx.font = '700 28px "Noto Serif SC", serif';
+    ctx.fillStyle = '#C44536';
+    ctx.fillText(scores[d], x + cellW/2, tableY + 78);
+  });
+
+  // 决策风格
+  const styleY = tableY + 130;
+  const styleInfo = DECISION_STYLES[r.decisionStyle];
+  ctx.textAlign = 'left';
+  ctx.font = '500 14px "JetBrains Mono", Menlo, monospace';
+  ctx.fillStyle = '#8A8278';
+  ctx.fillText('— 决策风格 —', 70, styleY);
+  ctx.font = '700 26px "Noto Serif SC", serif';
+  ctx.fillStyle = '#1A1714';
+  ctx.fillText(styleInfo.name, 70, styleY + 36);
+
+  // footer
+  ctx.font = '400 16px "JetBrains Mono", Menlo, monospace';
+  ctx.fillStyle = '#8A8278';
+  ctx.textAlign = 'center';
+  const origin = (window.location.host + window.location.pathname.replace(/\/$/, '')) || 'distance-test';
+  ctx.fillText(`${origin} · 距离测试`, W/2, H - 70);
+
+  return c;
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  // 中英混排：按字符切
+  const chars = Array.from(text);
+  let line = '';
+  let curY = y;
+  for (let i = 0; i < chars.length; i++) {
+    const test = line + chars[i];
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, curY);
+      line = chars[i];
+      curY += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line, x, curY);
+  return curY;
+}
+
+function drawRadarOnCanvas(ctx, cx, cy, radius, scores, proto) {
+  const dims = ['PS','SC','SO','CO','AS'];
+  const labels = ['空间感','社会嗅觉','棋盘思维','秩序心','占位力'];
+  const angle = (i) => -Math.PI/2 + (i * 2 * Math.PI / 5);
+  const point = (v, i) => [cx + Math.cos(angle(i)) * radius * (v/100), cy + Math.sin(angle(i)) * radius * (v/100)];
+
+  // 同心五边形
+  ctx.strokeStyle = '#D4CCB8';
+  ctx.lineWidth = 1;
+  [0.2, 0.4, 0.6, 0.8, 1.0].forEach(rr => {
+    ctx.beginPath();
+    dims.forEach((_, i) => {
+      const x = cx + Math.cos(angle(i)) * radius * rr;
+      const y = cy + Math.sin(angle(i)) * radius * rr;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.stroke();
+  });
+  // 轴线
+  dims.forEach((_, i) => {
+    const [x, y] = point(100, i);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+  });
+  // 原型轮廓
+  ctx.strokeStyle = '#8A8278';
+  ctx.setLineDash([5, 4]);
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  dims.forEach((d, i) => {
+    const [x, y] = point(proto[d], i);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // 用户分数
+  ctx.fillStyle = 'rgba(196, 69, 54, 0.25)';
+  ctx.strokeStyle = '#C44536';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  dims.forEach((d, i) => {
+    const [x, y] = point(scores[d], i);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  // 数据点
+  dims.forEach((d, i) => {
+    const [x, y] = point(scores[d], i);
+    ctx.fillStyle = '#C44536';
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI*2);
+    ctx.fill();
+  });
+  // 标签
+  ctx.font = '500 16px "Noto Serif SC", serif';
+  ctx.fillStyle = '#1A1714';
+  dims.forEach((_, i) => {
+    const [x, y] = point(118, i);
+    ctx.textAlign = (i === 1 || i === 2) ? 'left' : ((i === 3 || i === 4) ? 'right' : 'center');
+    ctx.fillText(labels[i], x, y + 5);
+  });
+}
+
+// ============================================================
+// 复制功能
+// ============================================================
+function copyResearchData() {
+  const data = state.fullRecord || {
+    anonymous_id: state.anonymousId,
+    start_time: state.startTime,
+    end_time: Date.now(),
+    user_agent: navigator.userAgent,
+    scenes: state.scenes,
+    scores: state.scores
+  };
+  navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+    showToast('研究数据已复制到剪贴板');
+  }).catch(() => {
+    showToast('复制失败，请手动截图');
+  });
+}
+
+function copyShareText() {
+  const info = TYPE_INFO[state.result.primary];
+  const text = `我是【${info.name}】（${info.nameEn}）\n"${info.slogan}"\n\n${info.sub}\n\n— 来自《距离测试》v0.1`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('分享文案已复制');
+  }).catch(() => {
+    showToast('复制失败');
+  });
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+detectFriend();
+renderSplash();
+</script>
+</body>
+</html>
